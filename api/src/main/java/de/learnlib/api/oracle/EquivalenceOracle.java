@@ -15,13 +15,13 @@
  */
 package de.learnlib.api.oracle;
 
-import java.util.Collection;
-
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Collection;
 
 /**
  * An equivalence oracle, which checks hypothesis automata against the (possibly unknown) system under learning (SUL).
@@ -61,6 +61,8 @@ public interface EquivalenceOracle<A, I, D> {
      * respective query.
      */
     @Nullable DefaultQuery<I, D> findCounterExample(A hypothesis, Collection<? extends I> inputs);
+
+
 
     /**
      * A specialization of the {@link EquivalenceOracle} interface for a DFA learning scenario.

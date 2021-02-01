@@ -15,11 +15,6 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import de.learnlib.api.oracle.BlackBoxOracle;
 import de.learnlib.api.oracle.BlackBoxOracle.DFABlackBoxOracle;
 import de.learnlib.api.oracle.BlackBoxOracle.MealyBlackBoxOracle;
@@ -36,6 +31,11 @@ import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The strategy of this black-box oracle is to first try to disprove all properties before finding a counter example to

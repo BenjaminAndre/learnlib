@@ -15,9 +15,6 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.Collection;
-import java.util.stream.Stream;
-
 import com.google.common.collect.Streams;
 import de.learnlib.api.oracle.EquivalenceOracle.DFAEquivalenceOracle;
 import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
@@ -34,6 +31,9 @@ import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.util.automata.conformance.WpMethodTestsIterator;
 import net.automatalib.words.Word;
+
+import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Implements an equivalence test by applying the Wp-method test on the given hypothesis automaton, as described in

@@ -15,11 +15,11 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.Collection;
-
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Collection;
 
 public class DelegateEQOracle<A, I, D> implements EquivalenceOracle<A, I, D> {
 

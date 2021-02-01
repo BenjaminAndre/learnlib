@@ -15,11 +15,6 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Stream;
-
 import de.learnlib.api.oracle.EquivalenceOracle.DFAEquivalenceOracle;
 import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
@@ -35,6 +30,11 @@ import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.commons.util.collections.CollectionsUtil;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
 
 /**
  * @author Maik Merten

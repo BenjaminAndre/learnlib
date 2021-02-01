@@ -15,14 +15,6 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
@@ -30,6 +22,8 @@ import de.learnlib.api.query.Query;
 import net.automatalib.automata.concepts.SuffixOutput;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.*;
 
 /**
  * An equivalence oracle that tests a hypothesis against a fixed set of sample queries.

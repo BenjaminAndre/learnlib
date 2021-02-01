@@ -15,8 +15,6 @@
  */
 package de.learnlib.api.logging;
 
-import java.util.Collection;
-
 import de.learnlib.api.oracle.PropertyOracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.concepts.Output;
@@ -24,6 +22,8 @@ import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Collection;
 
 /**
  * A PropertyOracle that performs logging.

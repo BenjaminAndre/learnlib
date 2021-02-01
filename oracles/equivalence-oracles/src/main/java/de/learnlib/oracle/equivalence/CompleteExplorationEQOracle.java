@@ -15,9 +15,6 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.Collection;
-import java.util.stream.Stream;
-
 import com.google.common.collect.Streams;
 import de.learnlib.api.oracle.EquivalenceOracle.DFAEquivalenceOracle;
 import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
@@ -33,6 +30,9 @@ import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.commons.util.collections.CollectionsUtil;
 import net.automatalib.words.Word;
+
+import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Implements an equivalence check by complete exploration up to a given depth, i.e., by testing all possible sequences

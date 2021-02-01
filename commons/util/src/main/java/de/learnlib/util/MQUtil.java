@@ -15,9 +15,6 @@
  */
 package de.learnlib.util;
 
-import java.util.Collection;
-import java.util.Objects;
-
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.oracle.OmegaQueryAnswerer;
 import de.learnlib.api.oracle.QueryAnswerer;
@@ -28,6 +25,9 @@ import net.automatalib.automata.concepts.SuffixOutput;
 import net.automatalib.commons.util.Pair;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Collection;
+import java.util.Objects;
 
 public final class MQUtil {
 

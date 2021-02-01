@@ -15,8 +15,6 @@
  */
 package de.learnlib.oracle.emptiness;
 
-import java.util.Objects;
-
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.fsa.DFA;
@@ -27,6 +25,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
+
+import java.util.Objects;
 
 /**
  * @author Jeroen Meijer

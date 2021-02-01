@@ -15,8 +15,6 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.Collection;
-
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.EquivalenceOracle.DFAEquivalenceOracle;
 import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
@@ -32,6 +30,8 @@ import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.util.automata.Automata;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Collection;
 
 @GenerateRefinement(name = "DFASimulatorEQOracle",
                     generics = "I",

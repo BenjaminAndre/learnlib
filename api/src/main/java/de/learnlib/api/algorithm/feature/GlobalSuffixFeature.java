@@ -15,10 +15,10 @@
  */
 package de.learnlib.api.algorithm.feature;
 
-import java.util.Collection;
-
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import net.automatalib.words.Word;
+
+import java.util.Collection;
 
 public interface GlobalSuffixFeature<I> {
 

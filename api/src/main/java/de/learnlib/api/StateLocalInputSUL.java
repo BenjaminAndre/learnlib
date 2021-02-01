@@ -15,9 +15,9 @@
  */
 package de.learnlib.api;
 
-import java.util.Collection;
-
 import de.learnlib.api.exception.SULException;
+
+import java.util.Collection;
 
 /**
  * A System Under Learning (SUL) which can additionally report the inputs that the SUL can process in its current state,

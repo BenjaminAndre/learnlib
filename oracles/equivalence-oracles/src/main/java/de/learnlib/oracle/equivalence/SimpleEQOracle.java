@@ -15,14 +15,14 @@
  */
 package de.learnlib.oracle.equivalence;
 
-import java.util.Collection;
-
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.concepts.InputAlphabetHolder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 public class SimpleEQOracle<A extends InputAlphabetHolder<I>, I, D> implements EquivalenceOracle<A, I, D> {
 

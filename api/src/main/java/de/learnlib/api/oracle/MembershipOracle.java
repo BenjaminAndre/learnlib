@@ -15,13 +15,13 @@
  */
 package de.learnlib.api.oracle;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import de.learnlib.api.oracle.parallelism.BatchProcessor;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.api.query.Query;
 import net.automatalib.words.Word;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Membership oracle interface. A membership oracle provides an elementary abstraction to a System Under Learning (SUL),
