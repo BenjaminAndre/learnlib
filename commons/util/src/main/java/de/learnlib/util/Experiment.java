@@ -15,13 +15,16 @@
  */
 package de.learnlib.util;
 
+import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.filter.statistic.Counter;
+import de.learnlib.oracle.equivalence.ALFEQOracle;
 import de.learnlib.util.statistics.SimpleProfiler;
 import net.automatalib.automata.fsa.DFA;
+import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
@@ -50,6 +53,10 @@ public class Experiment<A extends Object> {
                              EquivalenceOracle<? super A, I, D> equivalenceAlgorithm,
                              Alphabet<I> inputs) {
         this.impl = new ExperimentImpl<>(learningAlgorithm, equivalenceAlgorithm, inputs);
+    }
+
+    public <I> Experiment(ClassicLStarDFA<I> learningAlgorithm, ALFEQOracle<CompactDFA<I>,I> equivalenceAlgorithm, Alphabet<I> inputs) {
+        this.impl = new ExperimentImpl(learningAlgorithm, equivalenceAlgorithm, inputs);
     }
 
     public A run() {
@@ -166,8 +173,17 @@ public class Experiment<A extends Object> {
                              Alphabet<I> inputs) {
             super(learningAlgorithm, equivalenceAlgorithm, inputs);
         }
+    }
+
+    public static class LeverExperiment<I> extends Experiment<CompactDFA<I>> {
+        public LeverExperiment(ClassicLStarDFA<I> learningAlgorithm,
+                               ALFEQOracle<CompactDFA<I>, I> equivalenceAlgorithm,
+                               Alphabet<I> inputs){
+            super(learningAlgorithm, equivalenceAlgorithm, inputs);
+        }
 
     }
+
 
     public static class MealyExperiment<I, O> extends Experiment<MealyMachine<?, I, ?, O>> {
 

@@ -4,11 +4,11 @@ import de.learnlib.api.exception.SULException;
 import de.learnlib.api.exception.exception.SafeException;
 import de.learnlib.api.exception.exception.UnsafeException;
 import de.learnlib.api.oracle.EquivalenceOracle;
+import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.ca.impl.compact.CompactFIFOA;
-import net.automatalib.automata.concepts.TransitionAction;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
-import net.automatalib.words.Alphabet;
+import net.automatalib.util.automata.fsa.DFAs;
 import net.automatalib.words.PhiChar;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -18,22 +18,21 @@ import java.util.List;
 
 /**
  * Comparing to AL(F) with exceptions relative to safety
- * @param <S> State type of automaton
  * @param <A> A DFA automaton trying to guess AL(F)
  * @param <I> The input type
  */
-public class ALFEQOracle<S, A extends CompactDFA<I>, I>
-       implements EquivalenceOracle<A, I, Boolean> {
+public class ALFEQOracle<A extends CompactDFA<I>, I> implements EquivalenceOracle<A, PhiChar, Boolean> {
 
     private CompactFIFOA fifoa;
-    private List<S> badStates;
+    private MembershipOracle memoracle;
+    private List<Integer> badStates; //State in a compact DFA are bound to be stored as Integers
 
     // Needs to take a safety set into account. In the first place, juste a list of unwanted states
-    public ALFEQOracle(CompactFIFOA fifoa, List<S> badStates) {
+    public ALFEQOracle(CompactFIFOA<Character, Character> fifoa, MembershipOracle memoracle, List badStates) {
         this.fifoa = fifoa;
+        this.memoracle = memoracle;
         this.badStates = badStates;
     }
-
 
     /**
      * Entry to the thread.
@@ -45,11 +44,11 @@ public class ALFEQOracle<S, A extends CompactDFA<I>, I>
      * @return
      */
     @Override
-    public @Nullable DefaultQuery<I, Boolean> findCounterExample(A hypothesis, Collection<? extends I> inputs){
+    public @Nullable DefaultQuery<PhiChar, Boolean> findCounterExample(A hypothesis, Collection<? extends PhiChar> inputs){
         Word<I> counterExemple = this.fixpointCounterExemple(hypothesis);
         // First step : is L a fix point of F(A)
         if(counterExemple != null) {
-            return new DefaultQuery<>(counterExemple);
+            return new DefaultQuery(counterExemple);
         } else {
             // Second step : does it intersept an unsafe region
             counterExemple = getUnsafePath();
@@ -60,13 +59,12 @@ public class ALFEQOracle<S, A extends CompactDFA<I>, I>
                 if(isPathValid(counterExemple)) {
                     throw new SULException(new UnsafeException(counterExemple));
                 } else {
-                    return new DefaultQuery<>(counterExemple);
+                    return new DefaultQuery(counterExemple);
                 }
             }
         }
-
-
     }
+
 
 
     /**
@@ -74,7 +72,15 @@ public class ALFEQOracle<S, A extends CompactDFA<I>, I>
      * @return
      */
     private Word<I> fixpointCounterExemple(A hypothesis){
-        return null;
+        // We have A, we need it to be transformed to F(A) with our algorithm
+        CompactDFA hypPrime = (CompactDFA) fifoa.applyFL(hypothesis);
+        CompactDFA xored = DFAs.xor(hypPrime, hypothesis, hypothesis.getInputAlphabet());
+        if(DFAs.acceptsEmptyLanguage(xored)){
+            return null;
+        } else {
+            //todo return a word within xored
+            return null;
+        }
     }
 
     /**
@@ -94,50 +100,5 @@ public class ALFEQOracle<S, A extends CompactDFA<I>, I>
         return fifoa.isValidAnnotedTrace(counterExemple);
     }
 
-
-    // Returns F(A) to check if it is the same as A
-    private CompactDFA applyF(A hypothesis) {
-        Alphabet alphabet = hypothesis.getInputAlphabet();
-        // input alphabet contains characters 'a'..'b'
-        CompactDFA nDFA = new CompactDFA(alphabet);
-
-        //Maps old states names to new ones
-        Integer[] states = new Integer[hypothesis.getStates().size()];
-
-        for(int i = 0; i < hypothesis.getStates().size(); i++) {
-            states[i] = nDFA.addIntState();
-        }
-
-        nDFA.setInitialState(states[hypothesis.getInitialState()]);
-
-
-        //Iterate all transitions in the L candidate automaton
-        for(int thetaF : hypothesis.getTransitions()) {
-            TransitionAction.Action thetaAction = fifoa.getTransitionProperty(thetaF).getAction();
-            //Cases based on definition of F, and Post
-            // Invalid case is subtle here : avoided because only consider correct theta
-            // Case one : easy, no deriv to do
-            if(thetaAction == TransitionAction.Action.PUSH || thetaAction == TransitionAction.Action.PASS) {
-                // Add theta as is
-                nDFA.setTransition( states[hypothesis.getTransitionOriginState(thetaF)],
-                                    new PhiChar(thetaF),
-                                    states[hypothesis.getTransitionTargetState(thetaF)]
-                        );
-            // Case two : complicated : need to deriv from fifoa
-            } else {
-                // Action.PULL ?
-
-                // Need to find in fifoa all the paths CM that go to arcs that do c!m
-                // Once they've been found, find all the shortest paths to this theta (getTransitionOrder)
-
-                // Create paths leading to CM if not existing
-                // Add CM but barred
-                // Add pathes from CM to state before theta if not existing
-                // Add a last arc from last state to theta target state
-            }
-
-        }
-        return nDFA;
-    }
 
 }
