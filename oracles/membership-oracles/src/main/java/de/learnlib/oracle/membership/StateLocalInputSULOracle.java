@@ -15,14 +15,14 @@
  */
 package de.learnlib.oracle.membership;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import de.learnlib.api.StateLocalInputSUL;
 import de.learnlib.api.oracle.MembershipOracle.MealyMembershipOracle;
 import de.learnlib.api.query.Query;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A wrapper around a system under learning (SUL) with state local inputs.

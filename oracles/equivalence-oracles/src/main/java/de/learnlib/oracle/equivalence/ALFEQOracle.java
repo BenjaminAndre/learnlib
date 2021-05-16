@@ -3,25 +3,28 @@ package de.learnlib.oracle.equivalence;
 import de.learnlib.api.exception.SULException;
 import de.learnlib.api.exception.exception.SafeException;
 import de.learnlib.api.exception.exception.UnsafeException;
-import de.learnlib.api.oracle.EquivalenceOracle;
+import de.learnlib.api.oracle.EquivalenceOracle.FIFOAEquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.ca.impl.compact.CompactFIFOA;
+import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.serialization.dot.GraphDOT;
+import net.automatalib.util.automata.Automata;
+import net.automatalib.util.automata.ca.FIFOAs;
 import net.automatalib.util.automata.fsa.DFAs;
 import net.automatalib.words.PhiChar;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 /**
  * Comparing to AL(F) with exceptions relative to safety
- * @param <A> A DFA automaton trying to guess AL(F)
- * @param <I> The input type
  */
-public class ALFEQOracle<A extends CompactDFA<I>, I> implements EquivalenceOracle<A, PhiChar, Boolean> {
+public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
 
     private CompactFIFOA fifoa;
     private MembershipOracle memoracle;
@@ -44,14 +47,14 @@ public class ALFEQOracle<A extends CompactDFA<I>, I> implements EquivalenceOracl
      * @return
      */
     @Override
-    public @Nullable DefaultQuery<PhiChar, Boolean> findCounterExample(A hypothesis, Collection<? extends PhiChar> inputs){
-        Word<I> counterExemple = this.fixpointCounterExemple(hypothesis);
+    public @Nullable DefaultQuery<PhiChar, Boolean> findCounterExample(DFA<?, PhiChar> hypothesis, Collection<? extends PhiChar> inputs){
+        Word<PhiChar> counterExemple = this.fixpointCounterExemple(hypothesis);
         // First step : is L a fix point of F(A)
         if(counterExemple != null) {
             return new DefaultQuery(counterExemple);
         } else {
             // Second step : does it intersept an unsafe region
-            counterExemple = getUnsafePath();
+            counterExemple = getUnsafePath(hypothesis);
             if(counterExemple == null) {
                 throw new SULException(new SafeException());
             } else {
@@ -66,20 +69,33 @@ public class ALFEQOracle<A extends CompactDFA<I>, I> implements EquivalenceOracl
     }
 
 
-
     /**
      * Applies F(L) and compares it to L.
-     * @return
+     * Question is about comparing L and AL(F)
+     * @return A counter exemple or null if none can be found
      */
-    private Word<I> fixpointCounterExemple(A hypothesis){
+    private Word<PhiChar> fixpointCounterExemple(DFA<?, PhiChar> hyp){
         // We have A, we need it to be transformed to F(A) with our algorithm
-        CompactDFA hypPrime = (CompactDFA) fifoa.applyFL(hypothesis);
-        CompactDFA xored = DFAs.xor(hypPrime, hypothesis, hypothesis.getInputAlphabet());
-        if(DFAs.acceptsEmptyLanguage(xored)){
+        CompactDFA<PhiChar> hypothesis = (CompactDFA<PhiChar>) hyp;
+
+        CompactDFA<PhiChar> hypPrime = (CompactDFA) FIFOAs.applyFL(this.fifoa, hypothesis);
+        hypPrime = DFAs.minimize(hypPrime);
+        Word<PhiChar> ce = Automata.findSeparatingWord(hypPrime, hypothesis, hypothesis.getInputAlphabet());
+        if(ce == null){ //no CounterExemple, L = F(L)
             return null;
         } else {
-            //todo return a word within xored
-            return null;
+            //ce is a counterexemple of L=F(L). What's needed is a conterexemple of L=AL(F).
+            if(hypothesis.accepts(ce)){//means ce in L
+                return ce;
+            } else {
+                if(this.fifoa.isValidAnnotedTrace(ce)) {
+                    return ce;
+                } else { //Most difficult : an invalid word in F(L) which means it is invalid in L too and that it cannot be in AL(F)
+                    Word<PhiChar> emptyWord = Word.epsilon();
+                    List<Word<PhiChar>> cebeforefl = FIFOAs.reverseFL(this.fifoa, hypothesis, hypPrime, 0, ce, emptyWord, false);
+                    return cebeforefl.get(0);
+                }
+            }
         }
     }
 
@@ -87,8 +103,20 @@ public class ALFEQOracle<A extends CompactDFA<I>, I> implements EquivalenceOracl
      * Finds one counter-exemple of a path that leads to an unsafe state
      * @return
      */
-    private Word<I> getUnsafePath() {
-        return null;
+    private Word<PhiChar> getUnsafePath(DFA<?, PhiChar> hyp) {
+        CompactDFA<PhiChar> hypothesis = (CompactDFA<PhiChar>) hyp;
+
+        // Returns an unsafe path, being a path leading to a state not accepted
+        for(Integer q : this.badStates) {//Iter on q in Q
+            //Here, should iter on the list of regular languages
+            CompactDFA<PhiChar> hcjr = FIFOAs.reversehcj(this.fifoa, hypothesis, q);
+            Word<PhiChar> ce = Automata.findSeparatingWord(hcjr, hypothesis, hypothesis.getInputAlphabet());
+
+            if(ce != null) {
+                return ce;//Use the counter exemple
+            }
+        }
+        return null; //No counter example found
     }
 
     /**
@@ -96,9 +124,11 @@ public class ALFEQOracle<A extends CompactDFA<I>, I> implements EquivalenceOracl
      * @param counterExemple
      * @return
      */
-    private boolean isPathValid(Word<I> counterExemple) {
-        return fifoa.isValidAnnotedTrace(counterExemple);
+    private boolean isPathValid(Word<PhiChar> counterExemple) {
+        return (boolean) memoracle.answerQuery(counterExemple);
+        //return fifoa.isValidAnnotedTrace(counterExemple);
     }
+
 
 
 }

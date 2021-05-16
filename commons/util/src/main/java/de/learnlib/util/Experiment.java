@@ -15,18 +15,18 @@
  */
 package de.learnlib.util;
 
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.api.oracle.EquivalenceOracle;
+import de.learnlib.api.oracle.EquivalenceOracle.FIFOAEquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.filter.statistic.Counter;
-import de.learnlib.oracle.equivalence.ALFEQOracle;
 import de.learnlib.util.statistics.SimpleProfiler;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.PhiChar;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -55,9 +55,11 @@ public class Experiment<A extends Object> {
         this.impl = new ExperimentImpl<>(learningAlgorithm, equivalenceAlgorithm, inputs);
     }
 
-    public <I> Experiment(ClassicLStarDFA<I> learningAlgorithm, ALFEQOracle<CompactDFA<I>,I> equivalenceAlgorithm, Alphabet<I> inputs) {
+    // A being the CompactDFA (hopefully)
+    public Experiment(LearningAlgorithm<? extends DFA<?,PhiChar>, PhiChar,Boolean> learningAlgorithm, FIFOAEquivalenceOracle equivalenceAlgorithm, Alphabet<PhiChar> inputs) {
         this.impl = new ExperimentImpl(learningAlgorithm, equivalenceAlgorithm, inputs);
     }
+
 
     public A run() {
         if (this.finalHypothesis != null) {
@@ -175,10 +177,10 @@ public class Experiment<A extends Object> {
         }
     }
 
-    public static class LeverExperiment<I> extends Experiment<CompactDFA<I>> {
-        public LeverExperiment(ClassicLStarDFA<I> learningAlgorithm,
-                               ALFEQOracle<CompactDFA<I>, I> equivalenceAlgorithm,
-                               Alphabet<I> inputs){
+    public static class LeverExperiment extends Experiment<CompactDFA<PhiChar>> {
+        public LeverExperiment(LearningAlgorithm<? extends DFA<?,PhiChar>, PhiChar, Boolean> learningAlgorithm,
+                               FIFOAEquivalenceOracle equivalenceAlgorithm,
+                               Alphabet<PhiChar> inputs){
             super(learningAlgorithm, equivalenceAlgorithm, inputs);
         }
 

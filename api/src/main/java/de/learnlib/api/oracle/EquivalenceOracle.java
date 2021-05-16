@@ -18,6 +18,7 @@ package de.learnlib.api.oracle;
 import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.words.PhiChar;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -73,6 +74,12 @@ public interface EquivalenceOracle<A, I, D> {
      * @author Malte Isberner
      */
     interface DFAEquivalenceOracle<I> extends EquivalenceOracle<DFA<?, I>, I, Boolean> {}
+
+    /**
+     * A specializaion or FIFOA learning scenario.
+     * @param <I>
+     */
+    interface FIFOAEquivalenceOracle<I> extends EquivalenceOracle<DFA<?, PhiChar>, PhiChar, Boolean> {}
 
     /**
      * A specialization of the {@link EquivalenceOracle} interface for a Mealy learning scenario.

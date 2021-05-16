@@ -15,13 +15,13 @@
  */
 package de.learnlib.util.statistics;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import de.learnlib.api.logging.LearnLogger;
 import de.learnlib.filter.statistic.Counter;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Very rudimentary profiler.

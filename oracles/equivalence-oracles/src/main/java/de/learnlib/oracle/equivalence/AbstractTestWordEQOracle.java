@@ -82,8 +82,12 @@ public abstract class AbstractTestWordEQOracle<A extends Output<I, D>, I, D> imp
             D hypOutput = hypothesis.computeOutput(query.getInput());
             return !Objects.equals(hypOutput, query.getOutput());
         });
-
-        return ceStream.findFirst().orElse(null);
+        try {
+            return ceStream.findFirst().orElse(null);
+        } catch(ArrayIndexOutOfBoundsException eae) {
+            //Happens when ceStream returns an empty list
+            return null;
+        }
     }
 
     /**

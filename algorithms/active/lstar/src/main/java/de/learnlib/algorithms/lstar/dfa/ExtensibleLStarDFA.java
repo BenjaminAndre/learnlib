@@ -15,9 +15,6 @@
  */
 package de.learnlib.algorithms.lstar.dfa;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.github.misberner.buildergen.annotations.GenerateBuilder;
 import de.learnlib.algorithms.lstar.AbstractExtensibleAutomatonLStar;
 import de.learnlib.algorithms.lstar.ce.ObservationTableCEXHandler;
@@ -31,6 +28,9 @@ import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An implementation of Angluin's L* algorithm for learning DFAs, as described in the paper "Learning Regular Sets from
