@@ -21,7 +21,8 @@ public class FIFOTraceSimulatorOracle implements SingleQueryOracle<PhiChar, Bool
     @Override
     public Boolean answerQuery(Word<PhiChar> input) {
         // Can't give the work to the automaton as it wouldn't make sense.
-        return fifoa.validateTrace(input);
+        boolean answer = fifoa.validateTrace(input);
+        return answer;
     }
 
     // TODO explain what is prefix and suffix

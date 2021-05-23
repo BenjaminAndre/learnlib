@@ -163,7 +163,6 @@ public class Experiment<A extends Object> {
                 profileStart(LEARNING_PROFILE_KEY);
                 final boolean refined = learningAlgorithm.refineHypothesis(ce);
                 profileStop(LEARNING_PROFILE_KEY);
-
                 assert refined;
             }
         }

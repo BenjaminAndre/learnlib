@@ -48,21 +48,21 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
      */
     @Override
     public @Nullable DefaultQuery<PhiChar, Boolean> findCounterExample(DFA<?, PhiChar> hypothesis, Collection<? extends PhiChar> inputs){
-        Word<PhiChar> counterExemple = this.fixpointCounterExemple(hypothesis);
+        DefaultQuery<PhiChar, Boolean> counterExemple = this.fixpointCounterExemple(hypothesis);
         // First step : is L a fix point of F(A)
         if(counterExemple != null) {
-            return new DefaultQuery(counterExemple);
+            return counterExemple;
         } else {
             // Second step : does it intersept an unsafe region
-            counterExemple = getUnsafePath(hypothesis);
-            if(counterExemple == null) {
+            Word<PhiChar> unsafeExemple = getUnsafePath(hypothesis);
+            if(unsafeExemple == null) {
                 throw new SULException(new SafeException());
             } else {
                 // Third step : is path valid ?
-                if(isPathValid(counterExemple)) {
-                    throw new SULException(new UnsafeException(counterExemple));
+                if(isPathValid(unsafeExemple)) {
+                    throw new SULException(new UnsafeException(unsafeExemple));
                 } else {
-                    return new DefaultQuery(counterExemple);
+                    return new DefaultQuery(unsafeExemple);
                 }
             }
         }
@@ -74,26 +74,26 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
      * Question is about comparing L and AL(F)
      * @return A counter exemple or null if none can be found
      */
-    private Word<PhiChar> fixpointCounterExemple(DFA<?, PhiChar> hyp){
+    private DefaultQuery<PhiChar, Boolean> fixpointCounterExemple(DFA<?, PhiChar> hyp){
         // We have A, we need it to be transformed to F(A) with our algorithm
-        CompactDFA<PhiChar> hypothesis = (CompactDFA<PhiChar>) hyp;
-
+        CompactDFA<PhiChar> hypothesis = DFAs.minimize((CompactDFA < PhiChar >) hyp);
         CompactDFA<PhiChar> hypPrime = (CompactDFA) FIFOAs.applyFL(this.fifoa, hypothesis);
         hypPrime = DFAs.minimize(hypPrime);
+
         Word<PhiChar> ce = Automata.findSeparatingWord(hypPrime, hypothesis, hypothesis.getInputAlphabet());
         if(ce == null){ //no CounterExemple, L = F(L)
             return null;
         } else {
             //ce is a counterexemple of L=F(L). What's needed is a conterexemple of L=AL(F).
             if(hypothesis.accepts(ce)){//means ce in L
-                return ce;
+                return new DefaultQuery<>(ce);
             } else {
                 if(this.fifoa.isValidAnnotedTrace(ce)) {
-                    return ce;
+                    return new DefaultQuery<>(ce);
                 } else { //Most difficult : an invalid word in F(L) which means it is invalid in L too and that it cannot be in AL(F)
                     Word<PhiChar> emptyWord = Word.epsilon();
-                    List<Word<PhiChar>> cebeforefl = FIFOAs.reverseFL(this.fifoa, hypothesis, hypPrime, 0, ce, emptyWord, false);
-                    return cebeforefl.get(0);
+                    Word<PhiChar> cebeforefl = FIFOAs.reverseFL(this.fifoa, hypPrime, ce);
+                    return new DefaultQuery<>(cebeforefl);
                 }
             }
         }
