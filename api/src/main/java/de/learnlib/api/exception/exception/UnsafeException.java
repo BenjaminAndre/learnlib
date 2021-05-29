@@ -12,8 +12,8 @@ public class UnsafeException extends Exception {
 
     @Override
     public String toString() {
-        return "UnsafeException{" +
+        return "UnsafeException { " +
                 "counterExemple=" + counterExemple +
-                '}';
+                " }";
     }
 }

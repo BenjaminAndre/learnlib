@@ -29,12 +29,16 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
     private CompactFIFOA fifoa;
     private MembershipOracle memoracle;
     private List<Integer> badStates; //State in a compact DFA are bound to be stored as Integers
+    private CompactDFA emptyDFA;
 
     // Needs to take a safety set into account. In the first place, juste a list of unwanted states
     public ALFEQOracle(CompactFIFOA<Character, Character> fifoa, MembershipOracle memoracle, List badStates) {
         this.fifoa = fifoa;
         this.memoracle = memoracle;
         this.badStates = badStates;
+        this.emptyDFA = new CompactDFA(fifoa.getAnnotationAlphabet());
+        this.emptyDFA.setInitialState(0);
+        this.emptyDFA.addState(true);
     }
 
     /**
@@ -48,6 +52,7 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
      */
     @Override
     public @Nullable DefaultQuery<PhiChar, Boolean> findCounterExample(DFA<?, PhiChar> hypothesis, Collection<? extends PhiChar> inputs){
+
         DefaultQuery<PhiChar, Boolean> counterExemple = this.fixpointCounterExemple(hypothesis);
         // First step : is L a fix point of F(A)
         if(counterExemple != null) {
@@ -80,6 +85,12 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
         CompactDFA<PhiChar> hypPrime = (CompactDFA) FIFOAs.applyFL(this.fifoa, hypothesis);
         hypPrime = DFAs.minimize(hypPrime);
 
+        try {
+            GraphDOT.write(hypothesis, hypothesis.getAlphabet(), System.out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Word<PhiChar> ce = Automata.findSeparatingWord(hypPrime, hypothesis, hypothesis.getInputAlphabet());
         if(ce == null){ //no CounterExemple, L = F(L)
             return null;
@@ -88,10 +99,9 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
             if(hypothesis.accepts(ce)){//means ce in L
                 return new DefaultQuery<>(ce);
             } else {
-                if(this.fifoa.isValidAnnotedTrace(ce)) {
+                if(this.fifoa.isCorrectAnnotatedTrace(ce)) {
                     return new DefaultQuery<>(ce);
                 } else { //Most difficult : an invalid word in F(L) which means it is invalid in L too and that it cannot be in AL(F)
-                    Word<PhiChar> emptyWord = Word.epsilon();
                     Word<PhiChar> cebeforefl = FIFOAs.reverseFL(this.fifoa, hypPrime, ce);
                     return new DefaultQuery<>(cebeforefl);
                 }
@@ -110,10 +120,11 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
         for(Integer q : this.badStates) {//Iter on q in Q
             //Here, should iter on the list of regular languages
             CompactDFA<PhiChar> hcjr = FIFOAs.reversehcj(this.fifoa, hypothesis, q);
-            Word<PhiChar> ce = Automata.findSeparatingWord(hcjr, hypothesis, hypothesis.getInputAlphabet());
-
-            if(ce != null) {
-                return ce;//Use the counter exemple
+            List<Word<PhiChar>> ces = Automata.structuralCover(hcjr, hcjr.getAlphabet());
+            for(Word<PhiChar> ce : ces) {
+                if(!ce.isEmpty() && hcjr.accepts(ce)) { //Simplest found way to get a word from the automaton
+                    return ce;
+                }
             }
         }
         return null; //No counter example found
