@@ -86,7 +86,7 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
         hypPrime = DFAs.minimize(hypPrime);
 
         try {
-            GraphDOT.write(hypothesis, hypothesis.getAlphabet(), System.out);
+            GraphDOT.write(hypothesis, hypothesis.getInputAlphabet(), System.out);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -120,7 +120,7 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
         for(Integer q : this.badStates) {//Iter on q in Q
             //Here, should iter on the list of regular languages
             CompactDFA<PhiChar> hcjr = FIFOAs.reversehcj(this.fifoa, hypothesis, q);
-            List<Word<PhiChar>> ces = Automata.structuralCover(hcjr, hcjr.getAlphabet());
+            List<Word<PhiChar>> ces = Automata.structuralCover(hcjr, hcjr.getInputAlphabet());
             for(Word<PhiChar> ce : ces) {
                 if(!ce.isEmpty() && hcjr.accepts(ce)) { //Simplest found way to get a word from the automaton
                     return ce;
