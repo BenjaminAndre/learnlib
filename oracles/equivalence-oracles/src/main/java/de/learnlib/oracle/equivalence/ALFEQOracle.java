@@ -9,7 +9,6 @@ import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.ca.impl.compact.CompactFIFOA;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
-import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.util.automata.Automata;
 import net.automatalib.util.automata.ca.FIFOAs;
 import net.automatalib.util.automata.fsa.DFAs;
@@ -17,7 +16,6 @@ import net.automatalib.words.PhiChar;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -85,12 +83,6 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
         CompactDFA<PhiChar> hypPrime = (CompactDFA) FIFOAs.applyFL(this.fifoa, hypothesis);
         hypPrime = DFAs.minimize(hypPrime);
 
-        try {
-            GraphDOT.write(hypothesis, hypothesis.getInputAlphabet(), System.out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         Word<PhiChar> ce = Automata.findSeparatingWord(hypPrime, hypothesis, hypothesis.getInputAlphabet());
         if(ce == null){ //no CounterExemple, L = F(L)
             return null;
@@ -102,7 +94,7 @@ public class ALFEQOracle implements FIFOAEquivalenceOracle<PhiChar> {
                 if(this.fifoa.isCorrectAnnotatedTrace(ce)) {
                     return new DefaultQuery<>(ce);
                 } else { //Most difficult : an invalid word in F(L) which means it is invalid in L too and that it cannot be in AL(F)
-                    Word<PhiChar> cebeforefl = FIFOAs.reverseFL(this.fifoa, hypPrime, ce);
+                    Word<PhiChar> cebeforefl = FIFOAs.reverseFL(this.fifoa, ce);
                     return new DefaultQuery<>(cebeforefl);
                 }
             }
